@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cooking Inspiration — Playful Whimsical Vision</title>
+<style>
+  :root {
+    --ink: #2a2a28;
+    --muted: #8a8781;
+    --line: #e6e3dc;
+    --bg: #fdfcfa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 4rem 1.5rem 5rem;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    line-height: 1.6;
+  }
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.7rem;
+    font-weight: 400;
+    margin: 0 0 0.6rem;
+    letter-spacing: 0.01em;
+  }
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    margin: 3rem 0 0.4rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .intro {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 0 0 2.5rem;
+  }
+  .breadcrumb {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .breadcrumb a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { color: var(--ink); }
+
+  /* Quick-pick chips, styled like the folder chips elsewhere on the site */
+  .quickpicks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.6rem;
+    margin: 0 0 3rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .quickpick-group {
+    width: 100%;
+    margin-bottom: 0.3rem;
+  }
+  .quickpick-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .folder-chip {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.92rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1px;
+    margin-right: 1.4rem;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+  .folder-chip:hover { border-bottom-color: var(--ink); }
+
+  /* Entries */
+  .entry {
+    margin: 0 0 1.6rem;
+  }
+  .entry-name {
+    font-size: 1rem;
+    margin: 0 0 0.15rem;
+  }
+  .entry-name a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .entry-name a:hover { border-bottom-color: var(--ink); }
+  .entry-effort {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-left: 0.6rem;
+  }
+  .entry-desc {
+    margin: 0.3rem 0 0;
+    font-size: 0.95rem;
+  }
+
+  .footer-note {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Cooking Inspiration</h1>
+<p class="intro">A running list of places to peek for new recipe ideas — no obligation to cook from any of them, just somewhere to look when curiosity shows up.</p>
+
+<div class="breadcrumb"><a href="index.html">Playful Whimsical Vision</a> / Cooking Inspiration</div>
+
+<div class="quickpicks">
+  <div class="quickpick-group">
+    <span class="quickpick-label">Lowest friction</span>
+    <a class="folder-chip" href="https://straightupfood.com" target="_blank" rel="noopener">Straight Up Food</a>
+    <a class="folder-chip" href="https://www.forksoverknives.com" target="_blank" rel="noopener">Forks Over Knives</a>
+    <a class="folder-chip" href="https://thevegan8.com" target="_blank" rel="noopener">The Vegan 8</a>
+    <a class="folder-chip" href="https://www.thefullhelping.com" target="_blank" rel="noopener">Gena Hamshaw</a>
+  </div>
+  <div class="quickpick-group">
+    <span class="quickpick-label">Nudge me somewhere new</span>
+    <a class="folder-chip" href="https://bakinghermann.com" target="_blank" rel="noopener">Hermann</a>
+    <a class="folder-chip" href="https://rainbowplantlife.com" target="_blank" rel="noopener">Rainbow Plant Life</a>
+  </div>
+  <div class="quickpick-group">
+    <span class="quickpick-label">One-pot / minimal cleanup</span>
+    <a class="folder-chip" href="https://rachelama.com" target="_blank" rel="noopener">Rachel Ama</a>
+    <a class="folder-chip" href="https://minimalistbaker.com" target="_blank" rel="noopener">Minimalist Baker</a>
+    <a class="folder-chip" href="https://www.budgetbytes.com" target="_blank" rel="noopener">Budget Bytes</a>
+  </div>
+</div>
+
+<h2>The Familiar Staples</h2>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://www.forksoverknives.com" target="_blank" rel="noopener">Forks Over Knives</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">WFPB, oil-free by default. Huge archive, mostly weeknight-friendly.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://thehappypear.ie" target="_blank" rel="noopener">The Happy Pear</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">Irish twin brothers, veg-forward, big YouTube presence. Casual, high-energy style, quick meals.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://straightupfood.com" target="_blank" rel="noopener">Straight Up Food</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">Cathy Fisher. No oil, minimal ingredients, very clear technique — probably the lowest-friction site on this list.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://plantbasedonabudget.com" target="_blank" rel="noopener">Plant-Based on a Budget</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">Cheap, simple, unfussy.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://minimalistbaker.com" target="_blank" rel="noopener">Minimalist Baker</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">Built around ≤10 ingredients, ≤30 minutes, one bowl/pan. Not all WFPB but easy to adapt.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://rainbowplantlife.com" target="_blank" rel="noopener">Rainbow Plant Life</a><span class="entry-effort">Medium</span></p>
+  <p class="entry-desc">More flavor-forward and layered than the above, still approachable. More steps, bigger flavor payoff.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://www.budgetbytes.com" target="_blank" rel="noopener">Budget Bytes</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">Not vegan-specific but a large, well-tested vegan section with very clear technique instructions.</p>
+</div>
+
+<h2>Newer / Rising Voices</h2>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://bakinghermann.com" target="_blank" rel="noopener">Hermann — Julius Fiedler</a><span class="entry-effort">Medium</span></p>
+  <p class="entry-desc">Filmmaker-turned-food-creator; researches traditional dishes from cultures worldwide that happen to already be vegan (Keralan pancakes, Turkish köfte, Sicilian street food) rather than veganizing Western comfort food. 2026 cookbook <em>Naturally Vegan</em>. Technique-driven, good for nudging past the current repertoire.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://www.instagram.com/jeffreyboadi" target="_blank" rel="noopener">Jeffrey Boadi</a><span class="entry-effort">Easy–Medium</span></p>
+  <p class="entry-desc">Longtime social-media recipe creator, first cookbook (<em>Plant Fuel</em>) released in 2026. Plant-forward, everyday focus.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://rachelama.com" target="_blank" rel="noopener">Rachel Ama</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">Caribbean/African-rooted flavor, two bestselling cookbooks built around one-pot meals that work multiple ways across a week. Explicitly designed against elaborate weeknight cooking.</p>
+</div>
+
+<h2>Cookbook Authors Worth Following (strong reviews/sales, last ~2 years)</h2>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://www.thefullhelping.com" target="_blank" rel="noopener">Gena Hamshaw — The Full Helping</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">Registered dietitian; <em>A Grain, a Green, a Bean</em> (2024) is built on one simple repeatable formula rather than a sprawling recipe index — about as low-decision-load as it gets.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name"><a href="https://thevegan8.com" target="_blank" rel="noopener">The Vegan 8 — Brandi Doming</a><span class="entry-effort">Easy</span></p>
+  <p class="entry-desc">Every recipe capped at 8 ingredients; newest book is oil-free. Simplicity is the whole premise, similar spirit to Minimalist Baker.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name">Nisha Vora<span class="entry-effort">Medium</span></p>
+  <p class="entry-desc">2024 book <em>Big Vegan Flavor</em> was James-Beard-nominated; explicitly about technique for home cooks rather than fine dining. Earlier <em>Vegan Instant Pot Cookbook</em> is a long-running favorite.</p>
+</div>
+
+<div class="entry">
+  <p class="entry-name">Joanne Lee Molinaro — The Korean Vegan<span class="entry-effort">Medium</span></p>
+  <p class="entry-desc">Second book (<em>Homemade</em>) is looser and more personal than her James-Beard-winning debut; Koreanized takes on American/Italian/Mexican comfort food. Not oil-free but adaptable.</p>
+</div>
+
+<p class="footer-note">Recipes get run through the Gemini conversion workflow for sodium/oil adjustments as needed. Compiled July 2026.</p>
+
+</div>
+</body>
+</html>

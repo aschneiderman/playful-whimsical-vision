@@ -29,6 +29,15 @@ INDEX_NAME = "index.html"
 ASSETS_DIR = "assets"
 HERO_CANDIDATES = ["hero.jpg", "hero.jpeg", "hero.png", "hero.svg", "hero.webp"]
 
+# Manual chips to add alongside the auto-generated subfolder chips, keyed by
+# the folder's path relative to the repo root ("" = root itself). Each entry
+# is (label, href). These point at hand-written pages that live outside the
+# gallery system (i.e. NOT named index.html, so this script never overwrites
+# them) but should still show up as a chip on the relevant folder's page.
+EXTRA_LINKS = {
+    "": [("Cooking Inspiration", "cooking-inspiration.html")],
+}
+
 
 def find_hero(root: Path):
     """Look for assets/hero.* at the repo root. Returns the relative path (as a
@@ -96,6 +105,9 @@ def build_content(folder: Path, root: Path, hero: str = None) -> str:
     images = list_images(folder)
     title = format_name(folder.name) if folder != root else format_name(root.name)
 
+    rel_key = "/".join(folder.relative_to(root).parts)  # "" at root
+    extra_links = EXTRA_LINKS.get(rel_key, [])
+
     parts = [f"<h1>{escape(title)}</h1>"]
 
     if folder == root and hero:
@@ -103,12 +115,17 @@ def build_content(folder: Path, root: Path, hero: str = None) -> str:
 
     parts.append(build_breadcrumb(folder, root))
 
-    if subdirs:
-        chips = "\n".join(
+    if subdirs or extra_links:
+        chips = [
             f'<a class="folder-chip" href="{d.name}/{INDEX_NAME}">{escape(format_name(d.name))}</a>'
             for d in subdirs
-        )
-        parts.append(f'<div class="folders">\n{chips}\n</div>')
+        ]
+        chips += [
+            f'<a class="folder-chip" href="{escape(href)}">{escape(label)}</a>'
+            for label, href in extra_links
+        ]
+        chips_html = "\n".join(chips)
+        parts.append(f'<div class="folders">\n{chips_html}\n</div>')
 
     if images:
         cards = "\n".join(
@@ -120,7 +137,7 @@ def build_content(folder: Path, root: Path, hero: str = None) -> str:
             for img in images
         )
         parts.append(f'<div class="grid">\n{cards}\n</div>')
-    elif not subdirs:
+    elif not subdirs and not extra_links:
         parts.append('<p class="empty">Nothing here yet.</p>')
 
     return "\n".join(parts)
