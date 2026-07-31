@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mexico Field Project — Border Cities</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#11151b;
+  --ink2:#1a202a;
+  --ink3:#232b37;
+  --sodium:#e8a33d;
+  --sodium-dim:#8a6323;
+  --rio:#5b8f9c;
+  --bone:#e8e2d6;
+  --bone-dim:#9a948a;
+  --rust:#c2604a;
+  --sage:#7d9471;
+  --line:rgba(232,226,214,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--ink);
+  color:var(--bone);
+  font-family:'Newsreader',Georgia,serif;
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{display:flex;flex-direction:column;min-height:100%}
+
+/* ---------- masthead ---------- */
+header{
+  padding:22px 28px 16px;
+  border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;
+}
+.title{
+  font-family:'Archivo',sans-serif;font-weight:700;
+  font-size:clamp(15px,2.2vw,20px);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone);
+}
+.subtitle{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+  color:var(--bone-dim);margin-top:5px;
+}
+.legend{display:flex;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+  letter-spacing:.06em;color:var(--bone-dim);flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+
+/* ---------- map ---------- */
+.mapzone{padding:14px 20px 4px;background:
+  radial-gradient(ellipse 70% 90% at 50% 20%, rgba(91,143,156,.07), transparent 70%);}
+svg{width:100%;height:auto;display:block;overflow:visible}
+.node{cursor:pointer;transition:opacity .18s}
+.node circle.dot{transition:r .2s cubic-bezier(.34,1.4,.64,1),fill .2s,stroke-width .2s}
+.node:hover circle.dot{stroke-width:2.5}
+.node text{
+  font-family:'Archivo',sans-serif;font-size:12.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;
+  fill:#d8d2c6;
+  paint-order:stroke fill;
+  stroke:#0b1016;stroke-width:3.5px;stroke-linejoin:round;
+  transition:fill .18s;pointer-events:none;
+}
+.node:hover text,.node.active text{fill:#ffffff}
+.node.active circle.halo{opacity:1}
+.node circle.halo{opacity:0;transition:opacity .25s}
+.dim{opacity:.5}
+.borderline{fill:none;stroke:var(--sodium);stroke-width:1.4;opacity:.75}
+.land{stroke:rgba(232,226,214,.16);stroke-width:.8}
+.land.mx{fill:#1c232d}
+.land.us{fill:#171d26}
+.geo{font-family:'Archivo',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;
+  text-transform:uppercase;fill:var(--bone-dim);opacity:.6}
+.geo.sea{fill:var(--rio);opacity:.72;font-style:normal}
+
+/* ---------- dossier ---------- */
+main{flex:1;padding:8px 20px 60px}
+.dossier{
+  max-width:1180px;margin:0 auto;
+  border:1px solid var(--line);background:var(--ink2);
+}
+.empty{
+  padding:70px 30px;text-align:center;color:var(--bone-dim);
+}
+.empty p{font-size:17px;font-style:italic}
+.empty span{display:block;margin-top:10px;font-family:'IBM Plex Mono',monospace;
+  font-size:11px;letter-spacing:.08em;font-style:normal;opacity:.7}
+
+.dhead{padding:24px 30px 20px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.dhead h2{font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(24px,4vw,38px);
+  letter-spacing:.05em;text-transform:uppercase;line-height:1.05}
+.dstate{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+  color:var(--sodium);text-transform:uppercase;margin-top:8px}
+.stats{display:flex;gap:26px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+  letter-spacing:.05em;color:var(--bone-dim);text-align:right}
+.stats b{display:block;font-size:20px;color:var(--bone);font-weight:500;margin-bottom:2px;
+  letter-spacing:0}
+
+.thesis{padding:22px 30px;border-bottom:1px solid var(--line);
+  font-size:18px;line-height:1.55;color:var(--bone);font-weight:300}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.cell{padding:22px 30px;border-bottom:1px solid var(--line)}
+.cell:nth-child(odd){border-right:1px solid var(--line)}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--sodium-dim);margin-bottom:11px;display:block}
+.cell p{font-size:15px;line-height:1.62;color:var(--bone);opacity:.9}
+.cell p+p{margin-top:11px}
+
+details.expand{cursor:pointer}
+details.expand summary{list-style:none;outline:none}
+details.expand summary::-webkit-details-marker{display:none}
+.teaser{font-size:15px;line-height:1.62;color:var(--bone);opacity:.9}
+.more{display:inline-block;margin-top:10px;font-family:'IBM Plex Mono',monospace;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--sodium);
+  border-bottom:1px solid rgba(232,163,61,.4);padding-bottom:2px;transition:color .15s}
+details.expand summary:hover .more{color:#f5c46b}
+details.expand[open] summary .teaser{display:none}
+details.expand[open] summary .more{color:var(--bone-dim);border-color:transparent}
+details.expand[open] summary .more::after{content:" \2014 collapse"}
+.full{font-size:15px;line-height:1.65;color:var(--bone);opacity:.92;margin-top:12px}
+.people{padding:22px 30px;border-bottom:1px solid var(--line)}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-top:4px}
+.pcard{border-left:2px solid var(--sodium-dim);padding:2px 0 2px 13px}
+.pname{font-family:'Archivo',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;
+  line-height:1.3}
+.prole{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;
+  color:var(--sodium);margin:4px 0 5px;text-transform:uppercase}
+.pwhy{font-size:14px;line-height:1.5;color:var(--bone);opacity:.78}
+.pcard.org{border-left-color:var(--rio)}
+.pcard.org .prole{color:var(--rio)}
+.pcard.scholar{border-left-color:var(--sage)}
+.pcard.scholar .prole{color:var(--sage)}
+
+.carbadge{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;padding:4px 9px;border:1px solid;display:inline-block}
+.car-Essential{color:var(--rust);border-color:var(--rust);background:rgba(194,96,74,.09)}
+.car-Strongly-advised{color:var(--sodium);border-color:var(--sodium-dim);background:rgba(232,163,61,.07)}
+.car-Helpful{color:var(--rio);border-color:var(--rio)}
+.car-Not-needed{color:var(--sage);border-color:var(--sage)}
+.buslist{display:grid;gap:12px;margin-top:2px}
+.bus{display:flex;gap:14px;align-items:baseline}
+.bt{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--sodium);
+  min-width:72px;letter-spacing:-.01em}
+.bto{font-family:'Archivo',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em}
+.bn{font-size:13px;color:var(--bone-dim);line-height:1.45;margin-top:2px}
+.risk{padding:20px 30px;background:rgba(194,96,74,.07);border-bottom:1px solid var(--line)}
+.risk .eyebrow{color:var(--rust)}
+.risk p{font-size:14.5px;line-height:1.58}
+
+.foot{padding:18px 30px;display:flex;gap:34px;flex-wrap:wrap;
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;color:var(--bone-dim)}
+.foot div span{color:var(--sodium-dim);display:block;font-size:9.5px;letter-spacing:.14em;
+  margin-bottom:4px}
+.foot div b{color:var(--bone);font-weight:400;letter-spacing:0;
+  font-family:'Newsreader',serif;font-size:13.5px}
+
+.gap{font-style:italic;color:var(--bone-dim);font-size:14px}
+
+@media(max-width:760px){
+  header{padding:16px 16px 12px}
+  .mapzone{padding:10px 8px 0}
+  main{padding:6px 10px 40px}
+  .grid{grid-template-columns:1fr}
+  .cell:nth-child(odd){border-right:none}
+  .dhead,.thesis,.cell,.people,.risk,.foot{padding-left:18px;padding-right:18px}
+  .stats{text-align:left}
+  .node text{font-size:15px;stroke-width:4px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+:focus-visible{outline:2px solid var(--sodium);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="title">Mexico Field Project · Border Cities</div>
+    <div class="subtitle">13 border cities + 6 interior hubs · v2 · research as of 30 July 2026 · click a city</div>
+  </div>
+  <div class="legend">
+    <span><i style="background:#e8a33d"></i>Core</span>
+    <span><i style="background:#b98a3c"></i>Strong</span>
+    <span><i style="background:#7a6a4e"></i>If time</span>
+    <span><i style="background:#4a4a48"></i>Backlog</span>
+    <span style="opacity:.6">● border · ■ interior hub · size = days</span>
+  </div>
+</header>
+
+<div class="mapzone">
+  <svg id="map" viewBox="0 0 1000 470" role="img" aria-label="Map of the Mexico-United States border">
+    <defs>
+      <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0d1218"/><stop offset="100%" stop-color="#101822"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="1000" height="470" fill="url(#sea)"/>
+    <path id="usland" class="land us"></path>
+    <path id="mxland" class="land mx"></path>
+    <path id="bajaland" class="land mx"></path>
+    <path id="bline" class="borderline"></path>
+    <g id="labels"></g>
+    <g id="nodes"></g>
+  </svg>
+</div>
+
+</div>
+
+<main>
+  <div class="dossier" id="dossier">
+    <div class="empty">
+      <p>Pick a city on the line.</p>
+      <span>Each dossier holds the economic case, the local history, named contacts, and what the registry data showed.</span>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+const CITIES = [
+{
+  bus:[{to:"Tecate",t:"1 h 15",n:"ABC, very frequent"},{to:"Mexicali",t:"2 h 45",n:"ABC/Tufesa, hourly"}],
+  car:"Helpful",
+  transit:"The best-served city on the border, though still fragmented. The SITT BRT trunk corridor runs articulated buses along Insurgentes, layered over dozens of private operators — calafias and colour-coded camion lines — plus Uber and DiDi throughout. Moovit maps it. Scholarship from El Colef notes the city has spent over a decade trying and largely failing to modernise, leaving a disarticulated system and rising car dependence.",
+  carwhy:"You can work Tijuana without a car. The exception is the Otay and El Florido industrial zones, which sprawl and are awkward with gear.",
+  id:"tijuana", name:"Tijuana", state:"Baja California", lat:32.53, lng:-117.02,
+  priority:"Core", days:8, months:"Oct–May",
+  thesis:"The largest border city, and the argument against filming it is that everyone already has. The version nobody shot: deportees who decline the free bus ticket home and stay, building lives in a city they may never have lived in.",
+  economy:"Roughly 2 million people. Serious medical-device and electronics manufacturing that the tourist frame crowds out of view. Historically the lowest union density on the border — contracts sat with the CROM, and Quintero's work found unions here tended to disappear altogether. The registry data confirms it: of twelve industrial filings, almost none are maquila. They're salt workers, miners, ferry crews.",
+  history:"Garcia Martinez notes that Tijuana is the only case in Mexico where the coastline has marked the principal axis of regional development, and that its growth from the mid-20th century has no parallel in the country - the more striking because no significant population centre existed here beforehand. It is also the point of Mexican territory physically furthest from Mexico City. The origin was vice: during 1920s US Prohibition, Baja became the south-of-the-border destination for gamblers and drinkers. In 1911 the Magonistas of the PLM, by then declared against Madero, took the town. Founded 1889; the 137th anniversary fell in 2026, and the Archivo Historico has run an annual history symposium since 2008.",
+  data:"12 industrial filings across the three sampled periods, the fewest of any large border state relative to population. One of them is El Colef's own faculty union filing a pay claim against El Colegio de la Frontera Norte.",
+  risk:"The most accessible border city for a foreign crew. Normal urban caution; no fixer strictly required, though one helps with shelter access.",
+  people:[
+    {n:"José María García Lara",r:"Individual · quoted July 2026",t:"",w:"Founded Movimiento Juventud 2000 and coordinates the Alianza Migrante Tijuana, so he is both a subject and a map of the city's 25-plus shelters. Made the observation that carries the film: deportees bused to their home states come back to the border anyway."},
+    {n:"Movimiento Juventud 2000",r:"Shelter · zona centro",t:"org",w:"Low occupancy but severe funding strain — donor attention followed the anticipated crisis rather than the actual one."},
+    {n:"Proyecto Salesiano",r:"Shelter · Salesian order",t:"org",w:"Genuinely mixed population — Mexican deportees alongside people from Ethiopia, Cameroon, El Salvador, Colombia. One room that shows the border is not a US–Mexico story."},
+    {n:"Mario Ortiz Villacorta Lacave",r:"Cronista de la ciudad",t:"scholar",w:"Official city chronicler, honoured in July 2026 for lifetime work — which suggests he is elderly. Treat as time-sensitive."},
+    {n:"El Colef (headquarters)",r:"Research institution",t:"scholar",w:"78 doctoral researchers here, 67 in the national researcher system, plus the deepest border library that exists. Approach the institution and let them route you per city."},
+    {n:"Jorge Carrillo",r:"Scholar · El Colef",t:"scholar",w:"Publishing on maquiladoras since 1981, including the first issue of Frontera Norte in 1989. Can compare the industry now to forty years ago from his own fieldwork. Confirm he is still active."}
+  ]
+},
+{
+  bus:[{to:"Tijuana",t:"1 h 15",n:"ABC, very frequent"},{to:"Mexicali",t:"2 h",n:"ABC, frequent"}],
+  car:"Not needed",
+  transit:"Small enough to walk. Local buses and taxis exist; there is no system to learn.",
+  carwhy:"Nothing here requires driving.",
+  id:"tecate", name:"Tecate", state:"Baja California", lat:32.56, lng:-116.63,
+  priority:"Strong", days:4, months:"Oct–May",
+  thesis:"Promoted from Backlog. The only Mexican border town built around a plaza rather than the line - and a brewery town in a water-scarce region where a Kumeyaay water-rights defender was killed in 2020. The contrast piece turned out to hold the sharpest story in Baja.",
+  economy:"Around 110,000, the smallest of the Baja crossings, and dominated by a brewery in a region where water is contested. Kumeyaay communities including Juntas de Neji hold long-standing water claims against industrial and agricultural users.",
+  history:"Nothing in the corpus beyond guidebook mentions. Its distinction is structural rather than documented: the only Mexican border town laid out around a plaza rather than the line.",
+  data:"The Eyraud killing in September 2020 remains the defining local case. Verify its status. Note also the binational dimension: the Kumeyaay are split by the same 1848 line as everyone else on this route, and have relatives in San Diego County.",
+  risk:"Small and calm.",
+  people:[{n:"\u00d3scar Eyraud Adams (1986\u20132020)",r:"Kumeyaay water-rights defender \u00b7 killed 2020",t:"",w:"A Kumeyaay activist from the Juntas de Neji community who campaigned for indigenous water rights and against the dispossession of water supplies by international companies. He was killed on 24 September 2020, aged 33 or 34. His cousin Zulema Adams Pereyra served as mayor of Tecate. A brewery town in a water-scarce region, and a defender killed over exactly that question."},
+          {n:"Kumeyaay of Juntas de Neji",r:"Community",t:"org",w:"A binational people split by the same 1848 line as everyone else on this route. Approach only through an intermediary \u2014 a defender was murdered here."}]
+},
+{
+  bus:[{to:"Tecate",t:"2 h",n:"ABC, frequent"},{to:"San Luis Rio Colorado",t:"2 h 15",n:"frequent"}],
+  car:"Essential",
+  transit:"City buses on a wide grid, plus Uber and DiDi. Adequate for the city itself, useless for everything you actually came for.",
+  carwhy:"El Mayor Cucapa is 60 km out on the San Felipe road. The delta wetlands, the Rio Hardy, the agricultural valley and the restoration sites have no service at all. Add 45C summer heat and walking becomes hazardous. Rent here without question.",
+  id:"mexicali", name:"Mexicali", state:"Baja California", lat:32.62, lng:-115.44,
+  priority:"Core", days:7, months:"Nov–Mar only",
+  thesis:"The most underfilmed major city on the border, with three stories stacked on top of each other: Colorado River water politics, industrial agriculture in a desert that should not support it, and a Chinese-Mexican history that predates every frame the border is usually shot in.",
+  economy:"State capital, roughly a million people. Agriculture drawing on water that runs out before it reaches the delta. Summer temperatures above 45°C make filming genuinely hazardous — this is a November-to-March city.",
+  history:"The Mexicali Valley is the lower Colorado basin, and it fits the standard northwestern pattern - coastal plain backed by a sierra that feeds its irrigation - with one decisive exception: the international line cuts away the mountain hinterland, which sits in Arizona. A region deprived of its own watershed by a political decision. That is the water story in a sentence, and it predates every treaty argument. Add La Chinesca, the Chinese-Mexican quarter with its underground city, and the 2014 pulse flow when water was released from Presa Morelos and the river ran again - entire generations had never seen it pass their community; people camped, brought horses, and it became an enormous social event over Semana Santa.",
+  data:"2026 was described as a crucial year for renewal of the binational water agreement — the outcome determines whether the delta restoration story is hope or elegy.",
+  risk:"Comparatively calm. Extreme heat is the real hazard. Cucapá delta access requires local guidance.",
+  people:[
+    {n:"Fernando Márquez",r:"Individual · quoted July 2026",t:"",w:"Co-director of the Comité de Justicia Ambiental de la Frontera. Argues that low water is about extraction and basin use rather than heat — the political reading, not the meteorological one."},
+    {n:"El Mayor Cucapá",r:"Community · 60km from Mexicali",t:"org",w:"The people at the end of the Colorado. Named voices include Leticia Galaviz, who calls the river mother, brother and sustenance. Crucially the community is split over accepting protected-area status — that internal disagreement is more interesting than consensus."},
+    {n:"UABC",r:"State university",t:"scholar",w:"Architecture and urbanism programmes; the institutional route into water and agriculture questions El Colef covers less directly. Not yet researched in depth."}
+  ]
+},
+{
+  bus:[{to:"Mexicali",t:"2 h 15",n:"frequent"},{to:"Nogales",t:"7-8 h",n:"via Sonoyta and Caborca on Fed 2; Tufesa"}],
+  car:"Essential",
+  transit:"Minimal urban service in a small city. Taxis available.",
+  carwhy:"Ejido Pozas de Arvizu, the Cienega and the delta restoration sites are rural. No transit reaches them.",
+  id:"slrc", name:"San Luis Río Colorado", state:"Sonora", lat:32.45, lng:-114.77,
+  priority:"Strong", days:5, months:"Nov–Mar",
+  thesis:"The point where the Colorado is supposed to reach Mexico and generally does not. The starkest water story on the entire border.",
+  economy:"Around 180,000. Agriculture on both sides of the line drawing on a river that runs dry before the delta.",
+  history:"Nothing city-specific in the corpus. The relevant frame is Garcia Martinez on the Mexicali Valley and the lower Colorado - a region whose watershed lies across an international line.",
+  data:"US allocation to Mexico was set at 1,668 million m³ for 2026 against low storage. A national restoration programme identifies the Alto Golfo and Colorado Delta biosphere reserve as a priority site, though work slated for 2025 had not begun.",
+  risk:"Small town. Severe summer heat. Delta access needs local guidance — Cucapá territory.",
+  people:[{n:"\u00c1ngel Pesado",r:"Cucap\u00e1 beekeeper, 64",t:"",w:"One of three apiculturists at the ejido Pozas de Arvizu recovering an ancestral practice through wetland restoration. One old man and some bees carries the water argument better than any explainer."},
+          {n:"M\u00f3nica Espinoza",r:"Leader, Buscando en San Luis R\u00edo Colorado",t:"",w:"Presented to EU diplomats in Hermosillo in June 2026 alongside Yaqui members, journalists and defenders. Her structural point: many disappearance cases need Sonora\u2013Baja California cooperation, and that coordination is missing. The line that matters here is not the international one but the interstate one. PBI accompanies the collective \u2014 route contact through them."}]
+},
+{
+  bus:[{to:"Agua Prieta",t:"3 h 30",n:"Tufesa/ODM/Chihuahuenses, several daily"},{to:"San Luis Rio Colorado",t:"7-8 h",n:"long desert leg on Fed 2"}],
+  car:"Helpful",
+  transit:"Urban buses on a hilly, fairly compact street pattern. Kino Border Initiative sits close to the line and is reachable on foot from the crossing.",
+  carwhy:"The produce warehouses and the customs corridor are peripheral. A car helps for the food-logistics material but the migration material is walkable.",
+  id:"nogales", name:"Nogales", state:"Sonora", lat:31.30, lng:-110.94,
+  priority:"Strong", days:5, months:"Nov–Apr",
+  thesis:"The winter vegetable gateway — the food story of the border, and small enough to actually comprehend on camera.",
+  economy:"Around 265,000. A very large share of US winter produce crosses here. Also maquilas, though the union picture is thin: Quintero found unions in Nogales, as in Tijuana, tended to disappear.",
+  history:"Founded as Los Nogales de Elias. The corpus of national histories yielded nothing city-specific - a gap to fill from Sonoran sources, most likely El Colegio de Sonora.",
+  data:"Cleared out the deportee shelter built on a sports complex when the expected arrivals never materialised.",
+  risk:"More workable than Tamaulipas or Chihuahua, but the corridor south toward Altar and Sásabe is not. Stay on the Nogales–Hermosillo axis.",
+  people:[
+    {n:"Kino Border Initiative",r:"Organization · since 2008",t:"org",w:"The lowest-friction first contact on the entire border. Binational Jesuit operation with offices both sides, a comedor, Casa Nazaret for women and children, and a new Migrant Community Campus under construction. They host delegations routinely — they are used to outsiders in a way almost nobody else is."},
+    {n:"José Eduardo Calvario Parra",r:"Scholar · COLSON / U. de Sonora",t:"scholar",w:"Migration scholar bridging the academic and operational sides via the Jesuit network. Natural complement to Kino."}
+  ]
+},
+{
+  bus:[{to:"Nogales",t:"3 h 30",n:"several daily"},{to:"Ciudad Juarez",t:"6 h 20",n:"only about one direct daily, Chihuahuenses/Elite, overnight"}],
+  car:"Not needed",
+  transit:"A small town with local taxis. The centre is walkable and the crossing is right there.",
+  carwhy:"Only if you want to film the surrounding ranch country.",
+  id:"aguaprieta", name:"Agua Prieta", state:"Sonora", lat:31.33, lng:-109.55,
+  priority:"Strong", days:6, months:"Oct–Apr",
+  thesis:"Badly underrated on the first pass, now promoted. Agua Prieta exists because Phelps Dodge needed workers housed on the Mexican side of its Douglas smelter - the maquila relationship fifty years early - and it is where Calles broke Villa in 1915 and where the Plan of 1920 brought down Carranza. The last successful coup in Mexican history began in a town of 90,000.",
+  economy:"Around 90,000, across from Douglas, Arizona. Founded 1899; the first colonia, formed in 1900, was named Ferrocarril. The first settlers worked for the Phelps Dodge copper company, whose smelter stood across the line. A company town for a company in another country. Durable cross-border church and solidarity networks still function as an informal institution.",
+  history:"The territory was Chiricahua Apache; the name comes from the Opata word Bachicuy, for the nearby lagoon. On 1 November 1915 Villa, still carrying the defeat at Celaya, marched his men from Chihuahua without railways - Rodolfo Fierro drowned in marshland on the way - and attacked. Plutarco Elias Calles, then commissioner of Agua Prieta, defended with a trench system explicitly resembling the Western Front and won decisively with a force reportedly less than half Villa's 15,000. Accounts give Villa 223 dead on the field and over 300 wounded carried away against 42 defenders, twelve of them civilians. Crucially the defenders had American help: the United States had chosen its faction and permitted Carrancista reinforcements to move through US territory. Villa's turn against the United States, and the Columbus raid of March 1916, follow directly. Then on 23 April 1920 the Plan de Agua Prieta was signed here by Adolfo de la Huerta, governor of Sonora, and Calles, in support of Obregon, to force Carranza out. The stated pretext was a dispute over the waters of the Sonora river; the real cause was Carranza's centralisation against an independent Sonora. Carranza fled on 21 May and was killed days later. It is generally considered the last successful coup in Mexican history, and the Sonoran dynasty that ran Mexico for fifteen years begins here.",
+  data:"Physical survivals: the monument to Calles commemorating the battle; the Zaino de Agua Prieta horse monument; the Colonia Ferrocarril; the line of sight to the Douglas smelter site; and the trench ground if it can be located.",
+  risk:"Small and quiet.",
+  people:[{n:"Gasoducto Agua Prieta \u2014 Yaqui conflict",r:"Live territorial dispute",t:"org",w:"A Sempra Energy gas pipeline running from Arizona through Sonora and Sinaloa crosses the R\u00edo Yaqui, the Yaqui people's main water source. Mexico's ILO convention obligation to hold informed consultation is the legal crux. Three centuries after the 1740 revolt, the same argument about land, water and extraction."}]
+},
+{
+  bus:[{to:"Agua Prieta",t:"6 h 20",n:"roughly one direct daily, overnight"},{to:"Ojinaga",t:"5 h",n:"limited service via Villa Ahumada"}],
+  car:"Strongly advised",
+  transit:"Genuinely the best transit on the border. Juarez Bus — launched 2013 as ViveBus, renamed twice since — runs four BRT lines with dedicated lanes and feeder routes, mapped by both the city and the Consejo de Movilidad. Uber and DiDi work.",
+  carwhy:"The BRT is excellent for the city and useless for your subject. The maquila parks sit on the periphery, and the shots you want are shift changes at roughly 5am, 2pm and 10pm. Riding a worker bus at 5am with camera bodies is a different proposition from riding it as a passenger.",
+  id:"juarez", name:"Ciudad Juárez", state:"Chihuahua", lat:31.69, lng:-106.42,
+  priority:"Core", days:10, months:"Oct–Apr",
+  thesis:"The maquila capital, and right now the maquila crisis. The two biggest border stories of 2026 are colliding in one city — deindustrialisation, and infrastructure built for a deportation wave that arrived as a trickle.",
+  economy:"Maquila employment fell from over 330,000 to around 262,000, shedding 65,000 jobs since mid-2023 — while export value through the Paso del Norte ports rose 15.7%. More goods, fewer workers. The CTM federation alone spans more than 60 unions with roughly 55,000 members, the largest organised bloc on the border.",
+  history:"The negotiations that ended the Porfiriato happened here. In spring 1911 there were peace talks near Ciudad Juarez, Madero lifted the siege to fight further from the border, and Diaz dispatched Supreme Court magistrate Francisco S. Carbajal to reach a settlement. More broadly, between November 1910 and May 1911 the most important military operations of the revolution developed along the northern rail lines - because railways moved troops and because they connected to the border for arms. Garcia Martinez lists Ciudad Juarez among the places the 1848 boundary called into being, sustained by an economy that was frontier in the new international sense. Then a zone of divided power from 1969, when the CROC took the first maquila contract at Acapulco Fashions and the CTM almost simultaneously took RCA.",
+  data:"The find of the registry pass: seven separate contract-signing filings against BPI Brake Manufacturing in Jan–Feb 2026, from two competing unions. One is a retail-establishments union filing to represent brake workers — the textbook signature of a protection contract. No journalist has touched it.",
+  risk:"Historically volatile. Working through local journalists is standard practice and there is an established press community. Introduce yourself to the Red de Periodistas de Juárez.",
+  people:[
+    {n:"Red Mesa de Mujeres",r:"Organization · constituted 2008",t:"org",w:"The most established counter-source on femicide data, and they connect it to migration — women arriving as deportees have no support network and stay in violent situations."},
+    {n:"Yadira Cortés",r:"Coordinator, Red Mesa de Mujeres",t:"",w:"Argues that authorities classify murdered women as organised-crime victims, moving cases to the state prosecutor rather than the women's prosecutor. A specific, checkable claim rather than a lament."},
+    {n:"DHIA",r:"Organization · human rights",t:"org",w:"Works civic participation rather than atrocity — pushed the municipal government into approving a public-hearing mechanism in 2026. A story about building functioning local democracy in Juárez is rarer than the violence story."},
+    {n:"La Verdad Juárez",r:"Independent outlet",t:"org",w:"Member of both the Territorial alliance and the Border Hub. Covers exactly your subjects. The most efficient single introduction in the city."},
+    {n:"Raíchali",r:"Independent outlet",t:"org",w:"Name means 'word' in Rarámuri. Focus on Chihuahua's indigenous population, rural conditions and human rights — the route into the internal migration story."},
+    {n:"UACJ",r:"University · 21,000 students",t:"scholar",w:"Marisol Rodríguez Sosa on densification and habitability; Elian Coral Moreno Sánchez on public space as heritage; Pedro Molotla on construction history. Urbanists who study Juárez as a built environment rather than a crime scene."},
+    {n:"CTM Juárez federation",r:"Union · ~55,000 members",t:"org",w:"Corporatist, and the largest single bloc of organised workers in the city. Ask what happened to those members as 65,000 jobs disappeared."}
+  ]
+},
+{
+  bus:[{to:"Ciudad Juarez",t:"5 h",n:"limited service"},{to:"Ciudad Acuna",t:"18-24 h",n:"NO border route. Inland via Chihuahua, Torreon and Monclova, with connections"}],
+  car:"Essential",
+  transit:"Effectively none. A town of 30,000 with taxis.",
+  carwhy:"Everything interesting here is outside town — the Rio Conchos confluence, the river, the emptiness itself. Without a vehicle there is no story.",
+  id:"ojinaga", name:"Ojinaga", state:"Chihuahua", lat:29.55, lng:-104.41,
+  priority:"Strong", days:5, months:"Oct–Apr",
+  thesis:"Also badly underrated, now promoted. The last Federal stronghold in northern Mexico fell here in January 1914, after which the constitutionalists held the border and could turn inward. And the Rio Conchos refills the Rio Grande at this point, which means every city downstream drinks water Mexico supplies.",
+  economy:"Around 30,000, across from Presidio, Texas.",
+  history:"Formerly Presidio del Norte, in the region called La Junta de los Rios. Garcia Martinez treats the Ojinaga area and the lower Conchos basin as a distinct region within the north. His larger observation applies here more than anywhere: moving along the border is difficult because the line itself provides practically no link between the varied regions it crosses - the North is divided into sectors, each clearly separated from its neighbours. Ojinaga sits in the widest of those separations, where the Rio Conchos meets the Rio Grande and gives the river downstream its water.",
+  data:"No filings surfaced. Almost no prior coverage of any kind.",
+  risk:"Small and calm. The isolation is the logistical challenge, not the risk.",
+  people:[{n:"Paquita Jim\u00e9nez (1958\u20132020)",r:"Human rights defender \u00b7 born La Esmeralda, Ojinaga",t:"scholar",w:"Coordinated COSYDDHAC \u2014 reportedly the second human rights organization ever created in Mexico \u2014 and in 2001 co-founded the Red por la Participaci\u00f3n Ciudadana. A national figure from a municipality of 30,000. She died in 2020, so this is an archival and family thread."},
+          {n:"COSYDDHAC",r:"Human rights organization, Chihuahua",t:"org",w:"One of the oldest in the country, with a long record in the Sierra Tarahumara. The institutional partner for the forced-displacement story."}]
+},
+{
+  bus:[{to:"Piedras Negras",t:"2 h 30",n:"frequent"},{to:"Ojinaga",t:"18-24 h",n:"NO border route. Inland via Monclova, Torreon and Chihuahua"}],
+  car:"Strongly advised",
+  transit:"Colectivos and taxis. No structured system.",
+  carwhy:"The maquila parks are peripheral and the city sprawls around them. Shift-change timing again argues for your own vehicle.",
+  id:"acuna", name:"Ciudad Acuña", state:"Coahuila", lat:29.32, lng:-100.93,
+  priority:"If time", days:3, months:"Oct–Apr",
+  thesis:"A cleaner illustration of company-town dynamics than the big cities, where scale muddies the picture.",
+  economy:"Around 230,000, heavily maquila-dependent, with a small number of employers holding disproportionate leverage over the whole city.",
+  history:"Part of the regional system Garcia Martinez describes as created by the Amistad dam irrigation zone, binational with Eagle Pass, its hinterland running into the Sierra del Carmen and the Big Bend canyons. Known as Las Vacas until 1912. Brief international attention in 2021 with the Haitian encampment under the Del Rio bridge, then nothing.",
+  data:"Casa del Migrante Emmaús was the only civil-society institution I could find here — which is itself a finding, or a gap in my search. Worth confirming which.",
+  risk:"Coahuila is relatively workable.",
+  people:[{n:"Casa del Migrante Emma\u00fas",r:"Shelter \u00b7 Diocese of Piedras Negras",t:"org",w:"Dr Coss 47 esq. Victoria, Zona Centro. The only obvious independent institution surfaced in a city of 230,000 \u2014 which is itself a finding about a company town, or a gap in the search."}]
+},
+{
+  bus:[{to:"Ciudad Acuna",t:"2 h 30",n:"frequent"},{to:"Nuevo Laredo",t:"3 h 30",n:"regular service"}],
+  car:"Strongly advised",
+  transit:"Local buses and taxis in a modest city with a walkable centre.",
+  carwhy:"The river frontage, the crossing infrastructure and the coal country outside town all need driving. The centre does not.",
+  id:"piedras", name:"Piedras Negras", state:"Coahuila", lat:28.69, lng:-100.54,
+  priority:"Strong", days:4, months:"Oct–Apr",
+  thesis:"Eagle Pass was the most photographed stretch of border in recent years — the buoys, the razor wire, the National Guard standoff — and essentially all of it was shot from the Texas bank. The reverse angle is sitting there unfilmed.",
+  economy:"Around 180,000. A coal region, so there is a dying-industry story layered underneath the migration one.",
+  history:"Otto Schober records that the 34 men who founded the city on 15 June 1850 were repatriates - Mexican Americans arriving from the north. The city begins with people coming back, which is exactly what arrives there now. Garcia Martinez describes the surrounding regional system as substantially created by the irrigable zone controlled by the Presa de la Amistad, resting on Piedras Negras, Allende and Ciudad Acuna but also on Eagle Pass and localities across the line - with a vast, thinly populated hinterland merging into the Sierra del Carmen and reaching upriver to the Big Bend.",
+  data:"Coahuila had 30 industrial filings across the sampled periods, second only to Tamaulipas.",
+  risk:"One of the safer northern states. Heavy US enforcement presence across the river — be aware of how filming near the water reads to both governments.",
+  people:[
+    {n:"Casa del Migrante Frontera Digna",r:"Shelter · Madre Isabel Turcios",t:"org",w:"Turcios speaks on the record about who actually arrives — Colombians, Ecuadorians, Venezuelans, Hondurans, Mexicans, often whole families. A different picture than American coverage implies."},
+    {n:"Otto Schober",r:"Local historian",t:"scholar",w:"Author of Breve historia de Piedras Negras. Status uncertain — verify whether he is living. If not, someone locally holds his archive."}
+  ]
+},
+{
+  bus:[{to:"Piedras Negras",t:"3 h 30",n:"regular service"},{to:"Reynosa",t:"3 h",n:"frequent, Senda/Transportes del Norte"}],
+  car:"Essential",
+  transit:"Rutas and taxis operate, plus ride apps. The issue is not coverage.",
+  carwhy:"The World Trade Bridge truck queue — the shot that makes this city worth filming — is well out on the periphery. And in Tamaulipas you do not want to be standing at a bus stop with equipment, waiting. Controlled transport is a security measure here, not a convenience.",
+  id:"nlaredo", name:"Nuevo Laredo", state:"Tamaulipas", lat:27.48, lng:-99.55,
+  priority:"Strong", days:6, months:"Nov–Mar",
+  thesis:"The single most important trade crossing in North America, covered almost exclusively as a violence story and almost never as the logistics story it actually is. If you want to film what USMCA physically looks like, it looks like the truck queue here.",
+  economy:"Around 500,000. The majority of US–Mexico truck freight moves through this city. Also one of the nine México te Abraza deportee reception sites.",
+  history:"Garcia Martinez calls it a relatively isolated point on the Rio Bravo whose relevance comes entirely from position - a border post on the route between Monterrey and San Antonio, part of one of the most important international links. It belongs to Monterrey's regional web rather than the border's. Founded 1848 by residents of Laredo who moved south rather than become American, and named among the places the new boundary called into existence. Short-lived Lerdista risings here in the late 1870s.",
+  data:"The labour story here has an ending, and it is a defeat. 468 workers struck Tecmosa, a Caterpillar subsidiary, for 970 days from September 2023 under SNITIS. The case reached the USMCA Rapid Response Mechanism. On 19 May 2026 the federal labour tribunal absolved Caterpillar of signing a new contract and denied back pay. Then in June, workers filed a complaint asking for an investigation into their own lawyer.",
+  risk:"State Department Level 4. A difficult history for journalists specifically. Do not work here without established local relationships.",
+  people:[
+    {n:"SNITIS — Tecmosa case",r:"Union section",t:"org",w:"Nearly three years of strike and nothing to show. The strongest single labour sequence available on the border, and workers on both sides of the internal split are talking."},
+    {n:"Rosario Moreno Delgado",r:"Former SNITIS secretary general",t:"",w:"Notified companies in 2023 that Prieto no longer represented the union — the visible marker of the rupture. The thread to the union's story from inside rather than through its famous lawyer."},
+    {n:"Casa del Migrante Nazareth",r:"Shelter · Scalabrinian",t:"org",w:"Francisco I. Madero 350, Col. Viveros. Scalabrinian houses outlast administrations and cartel turnover — the contact most likely to still exist in 2028."}
+  ]
+},
+{
+  bus:[{to:"Matamoros",t:"1 h 30",n:"very frequent"},{to:"Nuevo Laredo",t:"3 h",n:"frequent"}],
+  car:"Essential",
+  transit:"Rutas exist. Do not plan around them.",
+  carwhy:"The hardest city on the list. Move in a vehicle, ideally with someone local driving. Consider hiring a driver rather than renting — a local plate and a local face change how you are read.",
+  id:"reynosa", name:"Reynosa", state:"Tamaulipas", lat:26.08, lng:-98.29,
+  priority:"If time", days:5, months:"Nov–Mar",
+  thesis:"Second-largest maquila workforce after Juárez, and the surface expression of the Burgos gas basin. Also the hardest city on the list to work in.",
+  economy:"Around 700,000. The 20/32 movement spread here from Matamoros in 2019 — useful as the test of whether that organising held anywhere outside its origin city.",
+  history:"The lower Bravo - what Americans call the Rio Grande Valley - is the only region in Mexico where the border forms the fundamental axis of regional articulation rather than merely a point on it. Settlement came late, from the end of the 18th century, and organised itself atypically on the river. Its waters, now controlled by the Falcon dam, irrigate agro-industrial development on both banks, and commerce concentrates in the Reynosa-McAllen conurbation. Despite obvious socioeconomic disparities, Garcia Martinez notes the symmetry across the river is striking.",
+  data:"The registry surfaced a union nobody writes about: the Sindicato Industrial Autónomo de Operarios en General de Maquiladoras, with eight filings across seven Reynosa plants including Amphenol, Samkwang, Hydro Precision Tubing, HCP Packaging and Minnesota Rubber. Zero press coverage anywhere. Whether 'autónomo' means genuinely independent or is protection-union branding is the open question.",
+  risk:"Level 4, and among the hardest border cities to work in. Requires serious local vouching. Assess honestly whether the story justifies it.",
+  people:[
+    {n:"Casa del Migrante Reynosa",r:"Shelter · Vincentian Sisters",t:"org",w:"Sister Carmen and Sister María accompany migrants to hospitals, lab tests and the bridge itself — which means they are the one institution with reason to move around the city openly. The practical answer to working somewhere almost nothing else is accessible."},
+    {n:"Sindicato Industrial Autónomo de Operarios",r:"Union · registry-only find",t:"org",w:"Administratively active across seven plants, invisible in journalism. Visible only because we pulled the data."},
+    {n:"Elefante Blanco",r:"Independent outlet · Tamaulipas",t:"org",w:"In June 2026 reporters Karen Salas and Óscar Ramos were forced by Marina personnel to delete footage of a fuel spill. Talk to them before pointing a camera at anything the Navy considers its business."}
+  ]
+},
+{
+  bus:[{to:"Reynosa",t:"1 h 30",n:"very frequent"},{to:"Nuevo Laredo",t:"4 h 30",n:"via Reynosa"}],
+  car:"Strongly advised",
+  transit:"Colectivos and taxis serve the city, including the industrial parks, because that is how workers get to them.",
+  carwhy:"The Finsa park is peripheral and the useful hours are shift changes. Worker transit actually goes where you need to go, which is itself worth filming — but you cannot control timing on it.",
+  id:"matamoros", name:"Matamoros", state:"Tamaulipas", lat:25.87, lng:-97.50,
+  priority:"Core", days:7, months:"Nov–Mar",
+  thesis:"The 20/32 strike wave of 2019 was the largest industrial action Mexico had seen this century, and it started here. It is still live — and the union at the centre of it is not an independent one.",
+  economy:"Around 520,000, with roughly 50,000 working in maquilas. In 2019 approximately 50,000 workers struck and 90 of 95 factories conceded. Then thousands were fired and plants closed. First Brands' bankruptcy now touches 14,000-plus Mexican workers across 36 maquilas.",
+  history:"Matamoros is older than the border it sits on, and it mattered before the line existed. When the colonial system ended, Guaymas and Matamoros opened as the North's first direct doors to the outside world - the beginning of the end of a region that had been forced through a single entrance, the Camino de Tierra Adentro. Then the 1848 delimitation, cutting through already-populated space, made it a key point again under a new international logic. Locally: SJOIIM founded 15 July 1932 as the Sindicato de Jornaleros de Matamoros, older than the maquila industry itself - which is why 20/32 in 2019 was a demand to enforce a contract rather than replace one.",
+  data:"Cirila Quintero's reframe, and the most useful thing found in this whole project: the 2019 strikes were not caused by the wage decree or by Susana Prieto. Matamoros workers had been organising since 2015, heirs to a genuinely strong local unionism — children and grandchildren of women who struck in the 1980s. If she is right, the interview subjects are the grandmothers, and the film is generational.",
+  risk:"Level 4. Not a place to arrive cold. Route in through labour lawyers, the union locals, or Mexico Solidarity Project contacts before setting a date.",
+  people:[
+    {n:"SJOIIM",r:"Union · founded 1932, CTM",t:"org",w:"The most important union interview available on the border, and not an independent one. Approaching Villafuerte is not neutral in this city — do it, but be clear-eyed about how it reads."},
+    {n:"Susana Prieto Terrazas",r:"Labour lawyer · contested figure",t:"",w:"The most visible figure of 2019 and organiser of the 30-22 successor at Tridonex. Also the most contested: the critique that she demobilised a rank-and-file rebellion is on the record, and a June 2026 complaint asks for an investigation into her conduct."},
+    {n:"Cirila Quintero",r:"Scholar · El Colef Matamoros",t:"scholar",w:"The comparative work that reframes the whole border into traditional, subordinated and disappearing union regimes. Her typology showed up directly in the 2026 registry data seventy years on."},
+    {n:"El Colef — Matamoros campus",r:"Research institution",t:"scholar",w:"Declared research lines map almost exactly onto your needs: unions, maquiladoras and gender; plus territorial development and cross-border infrastructure."}
+  ]
+}
+,
+{
+  hub:true,
+  car:"Helpful", transit:"Decent urban buses plus ride apps in a compact colonial centre. The bus terminal is the point of this city for you.", carwhy:"Walkable centre; the state archive and university are reachable without driving.",
+  bus:[{to:"Ciudad Juarez",t:"4-5 h",n:"very frequent, the busiest corridor in the state"},{to:"Ojinaga",t:"5 h",n:"limited service"}],
+  id:"chihuahua", name:"Chihuahua City", state:"Chihuahua", lat:28.63, lng:-106.08,
+  priority:"Strong", days:5, months:"Oct-Apr",
+  thesis:"The capital that governs Ciudad Juarez from four to five hours away, holding the archive, the university rectorate and the political power while Juarez holds the people and the problems. That distance is the story.",
+  economy:"State capital and administrative centre, with aerospace and auto-parts manufacturing of its own. The bus terminal is the single most important transit node in northern Mexico: from here you reach Ciudad Juarez, Ojinaga, Torreon, Saltillo, Monterrey, Monclova, Sabinas, Piedras Negras, Ciudad Acuna and Nuevo Laredo.",
+  history:"Founded 1709 as San Felipe el Real de Chihuahua, on silver. Hidalgo was executed here in 1811 after the first insurgency failed, and Villa was assassinated here in 1923 - the city bookends the revolutionary century. It was Juarez's seat of government during the French intervention, which is how Paso del Norte came to be renamed for him. In 1913 Villa took Chihuahua after Tierra Blanca; Governor Salvador Mercado fled not to Torreon, the logical route, but north to Ojinaga expecting American help - the error that produced the last Federal defeat in the north. Garcia Martinez notes Chihuahua had a less brilliant colonial past than its neighbours but far greater subsequent development, and that its regional web includes the agricultural zone of Ciudad Cuauhtemoc, whose most striking feature is a large Mennonite population - German-speaking farming colonies two hours from the capital, in a state everyone else films for cartels.",
+  data:"Holds the Chihuahua state archive and the UACH rectorate. For documentary work on Juarez or Ojinaga, the paper is here rather than there.",
+  risk:"State capital, normal urban caution. Considerably calmer than Juarez.",
+  people:[{n:"COSYDDHAC",r:"Human rights organization",t:"org",w:"cosyddhac.com. Among the oldest human rights organizations in Mexico, with deep Sierra Tarahumara experience. The route into both the displacement story and the Rar\u00e1muri thread running into Ju\u00e1rez."},
+          {n:"Misi\u00f3n Civil de Observaci\u00f3n",r:"Coalition \u00b7 displacement",t:"org",w:"In May 2026 local, national and international organizations documented forcibly displaced families across Parral, Delicias and Chihuahua City, particularly indigenous people from the Sierra Tarahumara. Those families end up in Ju\u00e1rez."},
+          {n:"Chihuahua state archive",r:"Institution",t:"scholar",w:"The documentary record for Ju\u00e1rez and Ojinaga, four hours from either."},
+          {n:"Quinta Luz / Museo Hist\u00f3rico de la Revoluci\u00f3n",r:"Museum",t:"org",w:"Villa's house, run for decades by his widow Luz Corral. The car he was killed in is there."}]
+},
+{
+  hub:true,
+  car:"Strongly advised", transit:"Basic urban buses and taxis in a working industrial city.", carwhy:"The steelworks and the coal towns of the Region Carbonifera - Sabinas, Nueva Rosita, San Juan de Sabinas - are all outside the city.",
+  bus:[{to:"Piedras Negras",t:"3-4 h",n:"about a dozen daily on Del Norte alone, plus Coahuilenses, Anahuac, Futura, Senda"},{to:"Chihuahua City",t:"9-11 h",n:"Omnibus de Mexico, Grupo Senda"}],
+  id:"monclova", name:"Monclova", state:"Coahuila", lat:26.90, lng:-101.42,
+  priority:"Strong", days:4, months:"Oct-Apr",
+  thesis:"La capital del acero, and the hinge that dissolves your worst travel problem. Monclova sits directly between Ojinaga and Piedras Negras, which means the inland detour passes straight through the explanation of Piedras Negras's coal story.",
+  economy:"AHMSA, Mexico's largest integrated steelworks, and the gateway to the Region Carbonifera coal basin. Heavy industry with old unions and old plants - a labour story completely distinct from the maquilas, and a different kind of collapse. Verify AHMSA's current status before travel; it has been in serious trouble.",
+  history:"Founded 1689 as capital of the colonial province of Coahuila, and for a period the administrative seat for Texas as well. It belongs to the wider structure the corpus describes: silver at Zacatecas in 1546 built the Camino Real, which ran through the northern mining districts to Santa Fe, and everything in the north hung off that one road. Garcia Martinez notes the region Monclova heads - the arid upper Salado basin - keeps its traditional low density and mining economy, renewed relatively recently by coal at Sabinas and Nueva Rosita, and remains among the most marginalised in the northern context. AHMSA was founded in 1942 as a state enterprise and privatised in 1991; its trajectory is the trajectory of Mexican industrial policy in one company. [verify] The Pasta de Conchos disaster of February 2006 at nearby San Juan de Sabinas killed 65 miners whose bodies were largely never recovered - the region's defining labour trauma and still a live political case.",
+  data:"Its terminal functions as a strategic hub into the coal region. Routing Ojinaga to Acuna inland means passing through here.",
+  risk:"Coahuila is one of the safer northern states. Industrial city, straightforward.",
+  people:[{n:"Juntos en Acci\u00f3n por Nuestros Desaparecidos \u2014 Regi\u00f3n Centro",r:"Search collective",t:"org",w:"Incorporated into Coahuila's state search mechanism in 2026. Monclova otherwise reads as a pure industry story; this is the other half of it."},
+          {n:"Arturo Islas",r:"Civic organiser, Regi\u00f3n Centro",t:"",w:"Named as accompanying thousands of residents protesting in Monclova's main square and outside the municipal palace. The one named civic organiser found here \u2014 verify what he is doing now."},
+          {n:"Pasta de Conchos families",r:"Movement \u2014 verify",t:"org",w:"Sixty-five miners died at San Juan de Sabinas in February 2006 and most bodies were never recovered. Twenty years on the accountability campaign has continued. Bishop Ra\u00fal Vera L\u00f3pez in Saltillo is connected to this case."}]
+},
+{
+  hub:true,
+  car:"Strongly advised", transit:"Buses and ride apps across a tri-city conurbation with Gomez Palacio and Lerdo, which straddles the Coahuila-Durango state line.", carwhy:"The ejidos of La Laguna are agricultural and spread across the valley.",
+  bus:[{to:"Chihuahua City",t:"6.5-8 h",n:"Omnibus de Mexico, Futura, Chihuahuenses; the 23:30 crosses the state overnight"},{to:"Saltillo",t:"3 h",n:"frequent"}],
+  id:"torreon", name:"Torreon", state:"Coahuila", lat:25.54, lng:-103.42,
+  priority:"Core", days:5, months:"Oct-Apr",
+  thesis:"Two buried histories, and the first runs straight back to Mexicali. Between 13 and 15 May 1911, Maderista forces and local crowds killed 303 Chinese residents here - half the community. It is the largest massacre of Chinese people in Mexican history and it was silenced for decades.",
+  economy:"Centre of La Laguna, a cotton and dairy region built on irrigation from the Nazas. With Gomez Palacio and Lerdo it formed what was described in 1911 as the second urban and industrial concentration of northern Mexico.",
+  history:"THE MASSACRE. Maderista forces took Torreon on 13 May 1911. Over three days, amid looting, 303 Chinese residents were killed - roughly half the community - including women, adolescents and children. Twelve Spaniards, a German and five Japanese merchants were also killed. Many who took refuge in the Banco Chino, the Wah Yick bank and tramway building of 1907, were seized and thrown from the roof. Rumours had circulated that Chinese residents were firing on the revolutionaries from rooftops; xenophobic speeches had been delivered at Gomez Palacio on 5 May. A federal investigation by the lawyer Antonio Ramos Pedrueza found the community had been peaceful; the Chinese Legation's own inquiry attributed the killings to race hatred and the desire to loot and kill. Madero promised indemnity and never paid it. In May 2021 President Lopez Obrador issued an apology to the Chinese people, and the Museo Arocena mounted a memorial exhibition. Julian Herbert's La Casa del Dolor Ajeno (2015) is the major literary account. LAND REFORM. In October 1936 Cardenas carried out the Laguna distribution: in about six weeks, 447,516 hectares including more than 100,000 irrigated passed to 34,743 ejidatarios organised into 296 ejidos. They were made collective deliberately, to keep the delicate cotton crop viable, financed through the Banco Agricola and the newly created Banco Nacional de Credito Ejidal, which channelled most of their resources to the Laguna. Corruption appeared before long.",
+  data:"The Banco Chino building survives in the historic centre, rehabilitated in 2012 as the Anexo Edificio Russek and now holding the Museo Arocena memorial. A massacre site that is also a museum.",
+  risk:"Normal urban caution. La Laguna has had difficult periods; check current conditions.",
+  people:[{n:"Museo Arocena",r:"Museum \u00b7 1911 memorial",t:"org",w:"Holds the massacre memorial in the former Banco Chino building, rehabilitated in 2012. A massacre site that is also a museum \u2014 both a source and a location."},
+          {n:"Raymundo Germ\u00e1n Valadez Andrade",r:"LGBT+ activist, La Laguna",t:"",w:"Recognised in June 2026 for years of work, and given the ceremonial first pitch at the Estadio Revoluci\u00f3n before an Algodoneros game. Pride TRC reached its 19th edition in 2026 under the theme legacy, resistance and community, with a record 8,000 expected. A two-decade Pride movement in a cotton-and-steel city."},
+          {n:"Familias por Polic\u00edas Municipales Desaparecidos",r:"Search collective",t:"org",w:"A collective specifically for disappeared municipal police, newly in the state mechanism. It echoes the observation from Nuevo Le\u00f3n that the first disappearance cases were police \u2014 a category nobody's narrative accommodates comfortably."},
+          {n:"Universidad Iberoamericana Torre\u00f3n",r:"Jesuit university",t:"scholar",w:"Doctorate in social process research; Jesuit, which links it to Kino in Nogales. The scholarly route into both the 1911 massacre and the Laguna ejidos."},
+          {n:"La Laguna ejidos",r:"Communities",t:"org",w:"The surviving collective ejidos of the 1936 distribution. Ninety years of an agrarian experiment, filmable."}]
+},
+{
+  hub:true,
+  car:"Helpful", transit:"Reasonable urban buses plus ride apps; a compact, walkable colonial centre.", carwhy:"The auto plants are on the periphery. The centre is not.",
+  bus:[{to:"Monterrey",t:"1 h 30",n:"constant, effectively a shuttle"},{to:"Piedras Negras",t:"5-6 h",n:"direct on Federal 57 via Monclova; Senda, Coahuilenses"}],
+  id:"saltillo", name:"Saltillo", state:"Coahuila", lat:25.42, lng:-101.00,
+  priority:"Strong", days:4, months:"Oct-Apr",
+  thesis:"Where the cars actually get built. Your border maquilas make harnesses, brakes and components; Saltillo assembles the vehicles. Filming both closes the supply chain in a way neither city can alone.",
+  economy:"Coahuila's capital and its automotive centre - GM, Stellantis and a dense supplier ecosystem. Also the state government that administers Piedras Negras and Ciudad Acuna from five hours north.",
+  history:"Founded 1577, among the oldest cities in northern Mexico, long the administrative centre for a Coahuila that at times included Texas. Its Tlaxcalan barrio, San Esteban de la Nueva Tlaxcala, settled 1591, is now confirmed in principle by the corpus: after peace in the Chichimeca war in the 1590s, sedentary peoples from central Mexico - Mexicans, Tlaxcalans, Tarascans and Otomies - migrated north, and Spaniards deliberately brought Indian colonists from the south, usually Aztecs or Tlaxcalans, to found agricultural settlements alongside the mining strikes. Northern Mexico was colonised twice over: by Spaniards, and by central Mexican indigenous people acting as settlers. Saltillo is where that can be filmed. The corpus also supplies the frame for why the north differs from the south - power relations there were never those of conqueror and conquered, viceroys eventually bought peace with gifts, and indigenous people kept substantial autonomy on a perpetual frontier.",
+  data:"Casa del Migrante de Saltillo is one of Mexico's most significant shelters, with a documented human rights practice and Red TDT connections.",
+  risk:"One of the safer cities in northern Mexico.",
+  people:[{n:"Ra\u00fal Vera L\u00f3pez",r:"Bishop emeritus of Saltillo",t:"",w:"The reason Saltillo has the human rights infrastructure it does \u2014 the diocesan centre, the migrant house, a long record on miners, migrants and LGBT+ rights. In January 2026 he appeared in person at a court hearing to support a woman in Coahuila's first vicarious-violence case. A bishop still showing up at hearings in his eighties. Time-sensitive."},
+          {n:"Jacqueline (Jackie) Campbell",r:"Urban human rights defender",t:"",w:"An urban defender rather than a migration one, which is rarer and directly relevant to a series about cities. From early 2026 she pressed for a municipal hearing on noise, insecurity, damage to historic heritage and irregular premises licensing in the historic centre; she attributes a four-year property suit to reprisals. In April 2026 an urgent action called on all three levels of government to guarantee her safety."},
+          {n:"Dr Rosa Mar\u00eda Salazar",r:"Director, Fundaci\u00f3n Luz y Esperanza",t:"",w:"Twenty-three years handling violence cases, used analytically: she argued in January 2026 that she has never seen precautionary measures applied as severely or as fast against men as the house arrest imposed on a woman in that case."},
+          {n:"Casa del Migrante de Saltillo",r:"Shelter \u00b7 Diocese of Saltillo",t:"org",w:"Juan de Erbaez 2406, Col Land\u00edn. One of the most significant shelters in Mexico, and unusual in that it documents and litigates rather than only providing services."},
+          {n:"Colectivo Hombres XX",r:"Trans rights collective",t:"org",w:"Organising a community day for the Day of Trans Visibility on 31 March, aimed at countering disinformation and demanding access to health, education, work and justice. Trans organising in a conservative industrial state capital."}]
+},
+{
+  hub:true,
+  car:"Helpful", transit:"The best transit in northern Mexico - a multi-line metro, plus buses and ride apps.", carwhy:"You can genuinely work Monterrey without a car. The industrial periphery is the exception.",
+  bus:[{to:"Saltillo",t:"1 h 30",n:"constant"},{to:"Nuevo Laredo",t:"3 h",n:"frequent; Senda, Transportes del Norte"}],
+  id:"monterrey", name:"Monterrey", state:"Nuevo Leon", lat:25.67, lng:-100.31,
+  priority:"Core", days:6, months:"Oct-Apr",
+  thesis:"The missing half of the labour story. You have workers and independent unions but not the class that designed the system - and it was designed here. Monterrey's industrial dynasties pioneered the sindicato blanco, the company-created union, as an alternative to both the CTM and to independent organising.",
+  economy:"Mexico's industrial capital and third city: steel, glass, cement, brewing and the financial groups built on them. Garcia Martinez calls it dominant in the northeast, with a regional web reaching Montemorelos, Linares, Sabinas Hidalgo and out to the Laredo-Nuevo Laredo pair. Every other northeastern region, he argues, arose either in Monterrey's shadow or as a counterweight to it, and none can turn its back on it entirely.",
+  history:"Founded 1596. In the national histories Monterrey appears mainly as a military and administrative seat rather than an industrial one: the base from which General Arredondo commanded the north during the Texas crisis, ordering the countryside evacuated before the Comanche offensive of 1813; the authority to which Stephen Austin's colonisation request had to be forwarded; and the military government that broke up the settlement at Liberty in 1831, helping trigger the Texian revolt. The industrial Monterrey - Fundidora, Cuauhtemoc, the sindicato blanco - is essentially absent from those histories, which is itself revealing: the city that designed Mexico's dominant labour-control model does not appear in the general record as a labour story at all. Its takeoff came in the 1890s with the Cuauhtemoc brewery and Fundidora steel, built by local families rather than foreign capital, and that bourgeoisie developed a paternalist model of company housing, schools, sport and unions designed to keep both the CTM and independent unionism out. Fundidora closed in 1986; its grounds are now an enormous public park with the blast furnace intact.",
+  data:"Garcia Martinez places Nuevo Laredo in Monterrey's orbit rather than the border's, which means the real regional capital of one of your border cities sits in a different state.",
+  risk:"Generally workable. Mexico's most business-oriented city.",
+  people:[{n:"CADHAC",r:"Human rights organization, founded 1993",t:"org",w:"cadhac.org. With AMORES it built joint search protocols with the state prosecutor that the UN publicly commended \u2014 civil society changing state practice rather than only denouncing it. Nuevo Le\u00f3n is the second state in Mexico for disappearances, with over 6,000 cases."},
+          {n:"Consuelo Morales Elizondo",r:"Founder of CADHAC; Catholic religious",t:"",w:"From 2007, mothers began arriving to say their sons had been taken; the first cases were police. Her claim is unambiguous: disappearance cannot happen without the acquiescence or complicity of authorities, and it answers to economic and territorial interests. A nun saying that on the record is formidable."},
+          {n:"AMORES and the NL search collectives",r:"Family collectives",t:"org",w:"AMORES, Buscadoras de Nuevo Le\u00f3n, Eslabones, FUNDENL and Todos Somos Uno all met the UN Committee on Enforced Disappearances. The plurality matters \u2014 a movement with internal differences, not one organization."},
+          {n:"Eduardo Loredo Guzm\u00e1n",r:"Urban researcher, UANL",t:"scholar",w:"Works on urban imaginaries and everyday mobility in Barrio San Luisito, Colonia Independencia, and on mobility as experienced by disabled people. The industrial city seen from the neighbourhood rather than the boardroom."},
+          {n:"Rebeca Moreno Z\u00fa\u00f1iga",r:"UANL, Centro de Estudios Human\u00edsticos",t:"scholar",w:"Author of a 2026 book on Monterrey as international city of knowledge, subtitled reflections on a failed urban gestation. The counter-narrative to the city's own branding, written from inside its main public university."},
+          {n:"Mar\u00eda Elena Ramos Tovar",r:"UANL, migration and health",t:"scholar",w:"Leads a Conacyt study on migrants' access to health across northeast Mexican cities and the Texas Valley, and helped found a binational research network. Her collaborators sit at the Universidad Aut\u00f3noma de Coahuila, UDEM, C\u00e1ritas de Monterrey, the UAT and the University of Texas \u2014 one conversation opening several cities."},
+          {n:"Nuevo Le\u00f3n water concession activists",r:"Coalition of 20+ organizations",t:"org",w:"In April 2026 reporting revealed that at least 15 public and business figures \u2014 including former governors and a sitting mayor \u2014 hold water concessions of 8.8 million cubic metres a year for a fixed fee of roughly 6,738 pesos every decade, with allegations of diversion to private estates, polo fields and tanker sales. Activists have pressed since 2022 and won a commitment to review and cancel titles."},
+          {n:"Parque Fundidora",r:"Site \u2014 former steelworks",t:"org",w:"A steel plant closed in 1986, now a public park with the blast furnace intact. The industrial past as civic space."}]
+},
+{
+  hub:true,
+  car:"Strongly advised", transit:"Urban buses and ride apps across a spread-out desert capital.", carwhy:"The Rio Sonora communities downstream of the Buenavista mine are rural and scattered. The Ford plant is peripheral.",
+  bus:[{to:"Nogales",t:"4 h",n:"frequent; Tufesa, TAP"},{to:"Guaymas",t:"1 h 30",n:"frequent"}],
+  id:"hermosillo", name:"Hermosillo", state:"Sonora", lat:29.07, lng:-110.96,
+  priority:"Strong", days:4, months:"Nov-Mar",
+  thesis:"The fix for the thinnest research gap on the route. Nogales, Agua Prieta and San Luis Rio Colorado are peripheral within their own state and barely documented - and El Colegio de Sonora, here, is where that gets solved.",
+  economy:"Sonora's capital and largest city, with a Ford assembly plant and the administrative weight of a state whose border towns are all small and distant. Garcia Martinez notes Sonora's most dynamic zones lie on the coastal plain west of Hermosillo and in the lowlands near Magdalena, Caborca and Nogales, and that the state shows how great distances and low density need not prevent regional integration.",
+  history:"Founded 1700 as Pitic, renamed in 1828 for the insurgent Jose Maria Gonzalez Hermosillo, and state capital from 1879. The deep story here is Yaqui. The Yaqui and Mayo revolt of 1740 stands out from the usual pattern of northern rebellions, and religion was not its main cause. Jesuits had founded missions from 1617, and the Yaquis had probably asked for them, having learned that priests supplied not only desirable goods but food in times of shortage. The missions did not deliver abundance. The 1740 revolt broke out during a famine caused by crop failure, and many attacks were uncoordinated acts by unrelated groups searching for food. Two aggravating factors: Spanish settlement had grown because mines to the east needed food and workers, producing haciendas sometimes on land claimed by Yaquis and Mayos plus a labour draft for the mines; and the Jesuits ran commercial agriculture, selling crops to the mining camps and shipping livestock and Yaqui labour to support the Baja California missions, while appointing non-Yaqui foremen. A mission economy extracting labour and food from one indigenous population to fund expansion into another region - the Sonora story two centuries before the maquilas, and the structural rhyme is exact. [verify] The Porfirian deportations of Yaqui families to Yucatan henequen plantations need a Sonoran source; COLSON is the place.",
+  data:"In August 2014 the Buenavista del Cobre mine, a Grupo Mexico operation at Cananea, spilled copper sulphate into the Rio Sonora, affecting downstream communities. Affected-community committees have organised since. A mining-and-water story that pairs directly with the Colorado. [verify current status]",
+  risk:"Generally calm. Severe summer heat.",
+  people:[{n:"Comit\u00e9s de Cuenca R\u00edo Sonora",r:"Community committees \u00b7 12 years",t:"org",w:"On 6 August 2014 Grupo M\u00e9xico spilled around 40,000 cubic metres of acidic copper sulphate into the Arroyo Tinajas, feeding the Bacanuchi and Sonora rivers. Eleven years and two full sexenios on, cancer diagnoses keep rising in children and adults and three territory defenders have died. The Supreme Court recognised their right to information in 2020; in April 2026 they hand-delivered a letter to Sheinbaum and were still waiting."},
+          {n:"Martha Carlota Aguirre Valenzuela",r:"Defender, CCRS",t:"",w:"Presented the R\u00edo Sonora case to European and Mexican authorities at the EU\u2013Mexico High-Level Dialogue in December 2025. She describes herself as a mother of two and a friend and relative of people suffering cancer, depression and kidney loss. A defender who is also one of the harmed."},
+          {n:"PODER",r:"Corporate accountability organization",t:"org",w:"poderlatam.org. Publishes in English, which makes it an unusually accessible entry point, and it holds the documentary record on Grupo M\u00e9xico. The right first call before approaching affected communities."},
+          {n:"Madres Buscadoras de Sonora",r:"Search collective \u2014 Ceci Flores",t:"org",w:"The best-known searching-mothers collective in Mexico; Flores was named to BBC 100 Women in 2022. In February 2026 the collective blocked the Hermosillo\u2013Bah\u00eda de Kino highway to force a meeting with the prosecutor. Also very heavily covered \u2014 the San Luis R\u00edo Colorado collective may be the better subject."},
+          {n:"El Colegio de Sonora (COLSON)",r:"Research institution",t:"scholar",w:"The Sonora counterpart to El Colef, and the practical answer to the Nogales and Agua Prieta research gap. Jos\u00e9 Eduardo Calvario Parra bridges COLSON, the Universidad de Sonora and the Jesuit migrant network."}]
+}
+];
+
+const PCOL={Core:"#e8a33d",Strong:"#b98a3c","If time":"#7a6a4e",Backlog:"#4a4a48"};
+const W=1000,H=470;
+const LNG0=-118.6,LNG1=-95.4,LAT0=24.2,LAT1=34.4;
+const X=l=>((l-LNG0)/(LNG1-LNG0))*W;
+const Y=l=>((LAT1-l)/(LAT1-LAT0))*H;
+const P=a=>a.map((c,i)=>(i?"L":"M")+X(c[0]).toFixed(1)+" "+Y(c[1]).toFixed(1)).join(" ");
+
+// Real border: Pacific -> Colorado River jog -> straight NM line -> Rio Grande incl. Big Bend
+const BORDER=[[-117.12,32.53],[-116.05,32.62],[-115.00,32.62],[-114.72,32.72],[-114.81,32.49],
+ [-113.00,32.00],[-111.07,31.33],[-109.05,31.33],[-108.21,31.33],[-108.21,31.78],[-106.53,31.78],
+ [-106.38,31.73],[-105.60,31.10],[-104.68,29.90],[-104.40,29.55],[-103.10,29.05],[-102.80,29.22],
+ [-102.35,29.88],[-101.40,29.77],[-100.93,29.32],[-100.50,28.70],[-100.00,28.10],[-99.50,27.50],
+ [-99.10,26.40],[-98.30,26.10],[-97.50,25.88],[-97.15,25.95]];
+
+const BAJA_W=[[-117.12,32.53],[-117.30,31.85],[-116.70,31.30],[-116.60,30.50],[-115.90,30.00],
+ [-115.80,29.30],[-115.20,28.50],[-114.60,27.80],[-114.20,27.00],[-113.40,26.60],[-112.60,26.20],
+ [-112.00,25.20],[-112.10,24.30]];
+const BAJA_E=[[-112.10,24.30],[-111.40,25.60],[-111.00,26.30],[-111.60,27.20],[-112.30,28.20],
+ [-113.20,29.10],[-113.60,30.20],[-114.30,31.00],[-114.70,31.80],[-114.81,32.49]];
+
+const MX_COAST=[[-114.72,32.72],[-114.00,31.60],[-113.20,31.00],[-112.60,30.00],[-112.30,29.30],
+ [-111.60,28.40],[-110.90,27.90],[-110.60,27.30],[-109.90,26.50],[-109.40,25.60],[-108.90,24.30]];
+const GULF=[[-97.15,25.95],[-97.40,25.20],[-97.70,24.30]];
+
+document.getElementById("bline").setAttribute("d",P(BORDER));
+
+// US landmass: everything north of the border, up to the frame
+document.getElementById("usland").setAttribute("d",
+  P(BORDER)+" L "+X(-95.4)+" "+Y(25.95)+" L "+X(-95.4)+" "+Y(34.4)+
+  " L "+X(-118.6)+" "+Y(34.4)+" L "+X(-118.6)+" "+Y(32.53)+" Z");
+
+// Mexican mainland: border -> Gulf coast -> bottom -> Pacific/Sea of Cortez coast
+document.getElementById("mxland").setAttribute("d",
+  P(BORDER.slice(3))+" "+GULF.map(c=>"L "+X(c[0]).toFixed(1)+" "+Y(c[1]).toFixed(1)).join(" ")+
+  " L "+X(-108.9)+" "+Y(24.2)+" "+
+  MX_COAST.slice().reverse().map(c=>"L "+X(c[0]).toFixed(1)+" "+Y(c[1]).toFixed(1)).join(" ")+" Z");
+
+// Baja peninsula
+document.getElementById("bajaland").setAttribute("d",
+  P(BAJA_W)+" "+BAJA_E.map(c=>"L "+X(c[0]).toFixed(1)+" "+Y(c[1]).toFixed(1)).join(" ")+
+  " L "+X(-117.12)+" "+Y(32.53)+" Z");
+
+// geographic labels
+const GL=[["UNITED STATES",-108.5,33.6,"geo"],["MEXICO",-104.0,26.4,"geo"],
+ ["PACIFIC",-118.0,29.5,"geo sea"],["GULF OF CALIFORNIA",-113.0,27.4,"geo sea"],
+ ["GULF OF MEXICO",-96.6,26.9,"geo sea"]];
+const NS="http://www.w3.org/2000/svg";
+const lg=document.getElementById("labels");
+GL.forEach(([txt,lng,lat,cls])=>{
+  const t=document.createElementNS(NS,"text");
+  t.setAttribute("x",X(lng));t.setAttribute("y",Y(lat));
+  t.setAttribute("class",cls);t.setAttribute("text-anchor","middle");
+  t.textContent=txt;lg.appendChild(t);
+});
+
+const sorted=[...CITIES].sort((a,b)=>a.lng-b.lng);
+const BORDER_CITIES=sorted.filter(c=>!c.hub);
+const g=document.getElementById("nodes");
+// label offsets tuned so the Baja cluster does not collide
+const OFF={tijuana:[-30,-14],tecate:[-2,-30],mexicali:[26,-16],slrc:[34,10],
+  nogales:[-38,6],aguaprieta:[16,-20],juarez:[30,-16],ojinaga:[34,4],
+  acuna:[-38,-10],piedras:[34,-6],nlaredo:[36,-6],reynosa:[38,2],matamoros:[34,14],
+  chihuahua:[26,6],monclova:[-30,-12],torreon:[-32,4],saltillo:[26,14],
+  monterrey:[30,6],hermosillo:[-34,4]};
+
+sorted.forEach(c=>{
+  const x=X(c.lng),y=Y(c.lat),r=4+c.days*0.8;
+  const node=document.createElementNS(NS,"g");
+  node.setAttribute("class","node");node.setAttribute("tabindex","0");
+  node.setAttribute("role","button");node.setAttribute("aria-label",c.name);
+  node.dataset.id=c.id;
+
+  const halo=document.createElementNS(NS,"circle");
+  halo.setAttribute("class","halo");halo.setAttribute("cx",x);halo.setAttribute("cy",y);
+  halo.setAttribute("r",r+9);halo.setAttribute("fill","none");
+  halo.setAttribute("stroke",PCOL[c.priority]);halo.setAttribute("stroke-width","1");
+  node.appendChild(halo);
+
+  let dot;
+  if(c.hub){
+    dot=document.createElementNS(NS,"rect");
+    dot.setAttribute("class","dot");
+    dot.setAttribute("x",x-r*0.8);dot.setAttribute("y",y-r*0.8);
+    dot.setAttribute("width",r*1.6);dot.setAttribute("height",r*1.6);
+    dot.setAttribute("fill","#141c26");
+    dot.setAttribute("stroke",PCOL[c.priority]);dot.setAttribute("stroke-width","2");
+  } else {
+    dot=document.createElementNS(NS,"circle");
+    dot.setAttribute("class","dot");dot.setAttribute("cx",x);dot.setAttribute("cy",y);
+    dot.setAttribute("r",r);dot.setAttribute("fill",PCOL[c.priority]);
+    dot.setAttribute("fill-opacity",".9");
+    dot.setAttribute("stroke","#0d1218");dot.setAttribute("stroke-width","1.2");
+  }
+  node.appendChild(dot);
+
+  const o=OFF[c.id]||[24,-12];
+  const t=document.createElementNS(NS,"text");
+  t.setAttribute("x",x+o[0]);t.setAttribute("y",y+o[1]);
+  t.setAttribute("text-anchor",o[0]<0?"end":"start");
+  t.textContent=c.name;node.appendChild(t);
+
+  const ln=document.createElementNS(NS,"line");
+  ln.setAttribute("x1",x+(o[0]<0?-r-2:r+2));ln.setAttribute("y1",y);
+  ln.setAttribute("x2",x+o[0]+(o[0]<0?4:-4));ln.setAttribute("y2",y+o[1]-4);
+  ln.setAttribute("stroke",PCOL[c.priority]);ln.setAttribute("stroke-width",".7");
+  ln.setAttribute("opacity",".45");node.appendChild(ln);
+
+  node.addEventListener("click",()=>select(c.id));
+  node.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(c.id)}});
+  g.appendChild(node);
+});
+
+function expandable(label, txt){
+  txt = txt || "";
+  const LIM = 300;
+  if (txt.length <= LIM)
+    return `<span class="eyebrow">${label}</span><p>${esc(txt)}</p>`;
+  let cut = txt.lastIndexOf(" ", LIM); if (cut < 0) cut = LIM;
+  return `<details class="expand">
+    <summary><span class="eyebrow">${label}</span>
+      <p class="teaser">${esc(txt.slice(0,cut))}…</p>
+      <span class="more">Read the full history</span></summary>
+    <p class="full">${esc(txt)}</p>
+  </details>`;
+}
+
+function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+
+function select(id){
+  const c=CITIES.find(x=>x.id===id);
+  document.querySelectorAll(".node").forEach(n=>{
+    const on=n.dataset.id===id;
+    n.classList.toggle("active",on);
+    n.classList.toggle("dim",!on);
+  });
+  const ppl=c.people.length
+    ? `<div class="plist">${c.people.map(p=>`
+        <div class="pcard ${p.t||""}">
+          <div class="pname">${esc(p.n)}</div>
+          <div class="prole">${esc(p.r)}</div>
+          <div class="pwhy">${esc(p.w)}</div>
+        </div>`).join("")}</div>`
+    : `<p class="gap">No named contacts yet. This city has not had a research pass.</p>`;
+
+  document.getElementById("dossier").innerHTML=`
+    <div class="dhead">
+      <div>
+        <h2>${esc(c.name)}</h2>
+        <div class="dstate">${esc(c.state)}${c.hub?" · interior hub":" · border"}</div>
+      </div>
+      <div class="stats">
+        <div><b>${esc(c.priority)}</b>priority</div>
+        <div><b>${c.days}</b>days planned</div>
+        <div><b>${c.people.length}</b>contacts logged</div>
+      </div>
+    </div>
+    <div class="thesis">${esc(c.thesis)}</div>
+    <div class="grid">
+      <div class="cell"><span class="eyebrow">Economy &amp; labour</span><p>${esc(c.economy)}</p></div>
+      <div class="cell">${expandable("Local history", c.history)}</div>
+    </div>
+    <div class="people"><span class="eyebrow">People &amp; organizations</span>${ppl}</div>
+    <div class="grid">
+      <div class="cell" style="border-right:1px solid var(--line)">
+        <span class="eyebrow">Registry data &amp; open questions</span><p>${esc(c.data)}</p></div>
+      <div class="cell"><span class="eyebrow">Best months</span><p>${esc(c.months)}</p></div>
+    </div>
+    <div class="cell" style="border-right:1px solid var(--line)"><span class="eyebrow">Getting around town</span>
+      <p>${esc(c.transit||"")}</p>
+      <p style="margin-top:13px"><span class="carbadge car-${(c.car||'').replace(/ /g,'-')}">Car: ${esc(c.car||'')}</span></p>
+      <p style="margin-top:9px">${esc(c.carwhy||"")}</p></div>
+    <div class="cell" style="border-right:none"><span class="eyebrow">Bus to nearest cities</span>
+      <div class="buslist">${(c.bus||[]).map(b=>`
+        <div class="bus"><div class="bt">${esc(b.t)}</div>
+          <div><div class="bto">${esc(b.to)}</div><div class="bn">${esc(b.n)}</div></div></div>`).join("")}</div></div>
+    <div class="risk"><span class="eyebrow">Access &amp; risk</span><p>${esc(c.risk)}</p></div>
+    <div class="foot">
+      <div><span>Last verified</span><b>30 July 2026</b></div>
+      <div><span>Sources</span><b>Press, scholarship, CFCRL filings</b></div>
+      <div><span>Refresh</span><b>Spring 2028</b></div>
+    </div>`;
+  document.getElementById("dossier").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+</script>
+</body>
+</html>
